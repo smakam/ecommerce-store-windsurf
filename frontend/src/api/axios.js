@@ -34,8 +34,8 @@ api.interceptors.response.use(
   (error) => {
     const originalRequest = error.config;
     
-    // Handle token expiration
-    if (error.response.status === 401 && !originalRequest._retry) {
+    // Handle token expiration - Add check for error.response to prevent 'Cannot read properties of undefined' error
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       
       // Clear user info from localStorage and redirect to login
