@@ -24,8 +24,9 @@ export const register = createAsyncThunk(
         },
       };
 
+      // Remove the duplicate /api since it's already in the baseURL
       const { data } = await api.post(
-        '/api/auth/register',
+        '/auth/register',
         { name, email, password, role },
         config
       );
@@ -52,8 +53,9 @@ export const login = createAsyncThunk(
         },
       };
 
+      // Remove the duplicate /api since it's already in the baseURL
       const { data } = await api.post(
-        '/api/auth/login',
+        '/auth/login',
         { email, password },
         config
       );
@@ -85,7 +87,8 @@ export const verifyEmail = createAsyncThunk(
   'auth/verifyEmail',
   async (token, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/api/auth/verify-email/${token}`);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.get(`/auth/verify-email/${token}`);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -108,8 +111,9 @@ export const forgotPassword = createAsyncThunk(
         },
       };
 
+      // Remove the duplicate /api since it's already in the baseURL
       const { data } = await api.post(
-        '/api/auth/forgot-password',
+        '/auth/forgot-password',
         { email },
         config
       );
@@ -136,8 +140,9 @@ export const resetPassword = createAsyncThunk(
         },
       };
 
+      // Remove the duplicate /api since it's already in the baseURL
       const { data } = await api.put(
-        `/api/auth/reset-password/${token}`,
+        `/auth/reset-password/${token}`,
         { password },
         config
       );
@@ -164,7 +169,8 @@ export const updateProfile = createAsyncThunk(
 
       const config = {};
 
-      const { data } = await api.put('/api/auth/profile', user, config);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.put('/auth/profile', user, config);
 
       localStorage.setItem('userInfo', JSON.stringify(data));
 

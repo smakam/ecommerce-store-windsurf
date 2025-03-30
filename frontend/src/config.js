@@ -7,6 +7,9 @@ const API_URL = process.env.NODE_ENV === 'production'
   ? 'https://ecommerce-store-windsurf.onrender.com/api'
   : process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
+// Ensure there's no duplicate /api in the URL
+console.log('Original API URL:', API_URL);
+
 // Log the current environment and API URL for debugging
 console.log('Current environment:', process.env.NODE_ENV);
 console.log('Using API URL:', API_URL);

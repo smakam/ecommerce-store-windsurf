@@ -15,8 +15,26 @@ const app = express();
 connectDB();
 
 // Middleware
+// Allow multiple origins for CORS to support both production and preview URLs
+const allowedOrigins = [
+  'https://ecommerce-store-windsurf.vercel.app',
+  'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app',
+  // Include localhost for development
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL,
+  origin: function(origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, etc)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) === -1) {
+      console.log('CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
+      return callback(null, false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 app.use(express.json());
