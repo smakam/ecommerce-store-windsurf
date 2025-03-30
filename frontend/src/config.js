@@ -21,7 +21,10 @@ const GOOGLE_CLIENT_ID = process.env.NODE_ENV === 'production'
   ? '652447041636-1bsvl5ifrkr8iut9nkabj3ju551k12dm.apps.googleusercontent.com'
   : process.env.REACT_APP_GOOGLE_CLIENT_ID || '652447041636-1bsvl5ifrkr8iut9nkabj3ju551k12dm.apps.googleusercontent.com';
 
-// Export configuration variables
+// Export individual configuration variables for direct imports
+export { API_URL, RAZORPAY_KEY_ID, GOOGLE_CLIENT_ID };
+
+// Also export the full configuration object
 const config = {
   API_URL,
   RAZORPAY_KEY_ID,

@@ -1,17 +1,20 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { FaGoogle } from 'react-icons/fa';
-import { API_URL } from '../../config';
 
 const GoogleLoginButton = () => {
-  // Log the API URL to see what's being used
-  console.log('Current API_URL:', API_URL);
-  console.log('Environment:', process.env.NODE_ENV);
-  
   const handleGoogleLogin = () => {
-    // Use window.open to open a new tab/window for the Google OAuth flow
-    const googleAuthUrl = `${API_URL}/auth/google`;
+    // Determine the correct API URL based on the environment
+    const baseUrl = process.env.NODE_ENV === 'production'
+      ? 'https://ecommerce-store-windsurf.onrender.com/api'
+      : process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+    
+    // Construct the Google Auth URL
+    const googleAuthUrl = `${baseUrl}/auth/google`;
+    console.log('Environment:', process.env.NODE_ENV);
     console.log('Opening Google Auth URL:', googleAuthUrl);
+    
+    // Open the Google Auth URL
     window.open(googleAuthUrl, '_self');
   };
 
