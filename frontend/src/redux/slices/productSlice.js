@@ -17,8 +17,9 @@ export const getProducts = createAsyncThunk(
   'product/getProducts',
   async ({ keyword = '', pageNumber = '', category = '', sort = '' }, { rejectWithValue }) => {
     try {
+      // Remove the duplicate /api since it's already in the baseURL
       const { data } = await api.get(
-        `/api/products?keyword=${keyword}&page=${pageNumber}&category=${category}&sort=${sort}`
+        `/products?keyword=${keyword}&page=${pageNumber}&category=${category}&sort=${sort}`
       );
       return data;
     } catch (error) {
@@ -36,7 +37,8 @@ export const getProductDetails = createAsyncThunk(
   'product/getProductDetails',
   async (id, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/api/products/${id}`);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.get(`/products/${id}`);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -64,7 +66,8 @@ export const createProductReview = createAsyncThunk(
         },
       };
 
-      await api.post(`/api/products/${productId}/reviews`, review, config);
+      // Remove the duplicate /api since it's already in the baseURL
+      await api.post(`/products/${productId}/reviews`, review, config);
       return { success: true };
     } catch (error) {
       return rejectWithValue(
@@ -81,7 +84,8 @@ export const getTopProducts = createAsyncThunk(
   'product/getTopProducts',
   async (_, { rejectWithValue }) => {
     try {
-      const { data } = await api.get('/api/products/top');
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.get('/products/top');
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -109,7 +113,8 @@ export const createProduct = createAsyncThunk(
         },
       };
 
-      const { data } = await api.post('/api/products', productData, config);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.post('/products', productData, config);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -137,7 +142,8 @@ export const updateProduct = createAsyncThunk(
         },
       };
 
-      const { data } = await api.put(`/api/products/${productId}`, productData, config);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.put(`/products/${productId}`, productData, config);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -164,7 +170,8 @@ export const deleteProduct = createAsyncThunk(
         },
       };
 
-      await api.delete(`/api/products/${id}`, config);
+      // Remove the duplicate /api since it's already in the baseURL
+      await api.delete(`/products/${id}`, config);
       return id;
     } catch (error) {
       return rejectWithValue(
@@ -191,7 +198,8 @@ export const getSellerProducts = createAsyncThunk(
         },
       };
 
-      const { data } = await api.get(`/api/products/seller?page=${pageNumber}`, config);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.get(`/products/seller?page=${pageNumber}`, config);
       return data;
     } catch (error) {
       return rejectWithValue(

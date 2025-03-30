@@ -16,8 +16,9 @@ export const listCategories = createAsyncThunk(
   'category/listCategories',
   async ({ keyword = '', pageNumber = 1 }, { rejectWithValue }) => {
     try {
+      // Remove the duplicate /api since it's already in the baseURL
       const { data } = await api.get(
-        `/api/categories?keyword=${keyword}&pageNumber=${pageNumber}`
+        `/categories?keyword=${keyword}&pageNumber=${pageNumber}`
       );
       return data;
     } catch (error) {
@@ -35,7 +36,8 @@ export const getCategoryDetails = createAsyncThunk(
   'category/getCategoryDetails',
   async (id, { rejectWithValue }) => {
     try {
-      const { data } = await api.get(`/api/categories/${id}`);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.get(`/categories/${id}`);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -52,7 +54,8 @@ export const createCategory = createAsyncThunk(
   'category/createCategory',
   async (categoryData, { getState, rejectWithValue }) => {
     try {
-      const { data } = await api.post('/api/categories', categoryData);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.post('/categories', categoryData);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -69,7 +72,8 @@ export const updateCategory = createAsyncThunk(
   'category/updateCategory',
   async ({ id, ...categoryData }, { getState, rejectWithValue }) => {
     try {
-      const { data } = await api.put(`/api/categories/${id}`, categoryData);
+      // Remove the duplicate /api since it's already in the baseURL
+      const { data } = await api.put(`/categories/${id}`, categoryData);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -86,7 +90,8 @@ export const deleteCategory = createAsyncThunk(
   'category/deleteCategory',
   async (id, { getState, rejectWithValue }) => {
     try {
-      await api.delete(`/api/categories/${id}`);
+      // Remove the duplicate /api since it's already in the baseURL
+      await api.delete(`/categories/${id}`);
       return id;
     } catch (error) {
       return rejectWithValue(
