@@ -1,11 +1,12 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
 import { FaGoogle } from 'react-icons/fa';
+import { API_URL } from '../../config';
 
 const GoogleLoginButton = () => {
   const handleGoogleLogin = () => {
     // Use window.open to open a new tab/window for the Google OAuth flow
-    window.open('http://localhost:5001/api/auth/google', '_self');
+    window.open(`${API_URL}/auth/google`, '_self');
   };
 
   return (
