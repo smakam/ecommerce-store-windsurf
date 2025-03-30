@@ -5,16 +5,18 @@ import { FaGoogle } from 'react-icons/fa';
 const GoogleLoginButton = () => {
   const handleGoogleLogin = () => {
     // Determine the correct API URL based on the environment
-    const baseUrl = process.env.NODE_ENV === 'production'
+    // In development, use the full URL with localhost and port
+    // In production, use the Render backend URL
+    const fullApiUrl = process.env.NODE_ENV === 'production'
       ? 'https://ecommerce-store-windsurf.onrender.com/api'
-      : process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+      : 'http://localhost:5001/api';
     
-    // Construct the Google Auth URL
-    const googleAuthUrl = `${baseUrl}/auth/google`;
+    // Construct the Google Auth URL with the complete URL
+    const googleAuthUrl = `${fullApiUrl}/auth/google`;
     console.log('Environment:', process.env.NODE_ENV);
     console.log('Opening Google Auth URL:', googleAuthUrl);
     
-    // Open the Google Auth URL
+    // Open the Google Auth URL in the same window
     window.open(googleAuthUrl, '_self');
   };
 
