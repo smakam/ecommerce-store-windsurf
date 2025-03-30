@@ -323,13 +323,13 @@ exports.googleAuthCallback = (req, res, next) => {
     
     if (!user) {
       console.log('No user returned from Google Auth');
-      return res.redirect(`http://localhost:3000/login?error=auth_failed`);
+      return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
     }
 
     console.log('Google Auth Success, User:', user.email);
     const token = generateToken(user._id);
     
     // Redirect to frontend with token
-    res.redirect(`http://localhost:3000/login/success?token=${token}`);
+    res.redirect(`${process.env.FRONTEND_URL}/login/success?token=${token}`);
   })(req, res, next);
 };
