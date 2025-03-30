@@ -5,6 +5,7 @@ import { Container, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { login } from '../redux/slices/authSlice';
 import api from '../api/axios';
+import config from '../config';
 
 const GoogleAuthCallback = () => {
   const dispatch = useDispatch();
@@ -27,18 +28,28 @@ const GoogleAuthCallback = () => {
       const fetchUserInfo = async () => {
         try {
           console.log('Fetching user profile with token');
+          console.log('API URL being used:', config.API_URL);
           
-          // Use the axios instance with the correct baseURL instead of fetch
-          const response = await api.get('/auth/profile', {
+          // Create a direct axios instance for this specific request to ensure we have control over everything
+          const axios = require('axios');
+          
+          // Make a direct request to the full URL to avoid any baseURL issues
+          const fullUrl = `${config.API_URL}/auth/profile`;
+          console.log('Making request to:', fullUrl);
+          
+          const response = await axios.get(fullUrl, {
             headers: {
-              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`
             },
+            timeout: 10000
           });
           
           // Axios returns data directly
           const userData = response.data;
           
           console.log('Successfully fetched user profile');
+          console.log('User data:', userData);
           
           // Create complete user info object
           const userInfo = {
