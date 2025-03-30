@@ -42,6 +42,51 @@ export const register = createAsyncThunk(
   }
 );
 
+// Google Login Success
+export const googleLoginSuccess = createAsyncThunk(
+  'auth/googleLoginSuccess',
+  async (token, { rejectWithValue }) => {
+    try {
+      console.log('Processing Google login with token');
+      
+      // Get user profile using the token
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+      
+      // Use the auth/profile endpoint to get user data
+      const { data } = await api.get('/auth/profile', config);
+      
+      // Create the complete user info object with token
+      const userInfo = {
+        ...data,
+        token,
+      };
+      
+      // Store in localStorage
+      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      
+      return userInfo;
+    } catch (error) {
+      console.error('Google login error:', error);
+      
+      // Detailed error logging
+      if (error.response) {
+        console.error('Error response data:', error.response.data);
+        console.error('Error response status:', error.response.status);
+      }
+      
+      return rejectWithValue(
+        error.response && error.response.data.message
+          ? error.response.data.message
+          : 'Failed to authenticate with Google. Please try again.'
+      );
+    }
+  }
+);
+
 // Login user
 export const login = createAsyncThunk(
   'auth/login',
@@ -221,6 +266,19 @@ const authSlice = createSlice({
         state.userInfo = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      // Google Login Success
+      .addCase(googleLoginSuccess.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(googleLoginSuccess.fulfilled, (state, action) => {
+        state.loading = false;
+        state.userInfo = action.payload;
+      })
+      .addCase(googleLoginSuccess.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
