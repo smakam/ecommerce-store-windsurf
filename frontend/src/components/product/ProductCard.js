@@ -16,7 +16,16 @@ const ProductCard = ({ product }) => {
     <Card className="my-3 p-3 rounded product-card">
       <Link to={`/product/${product._id}`}>
         <Card.Img 
-          src={product.images && product.images.length > 0 ? product.images[0] : '/images/placeholder.jpg'} 
+          src={product.images && product.images.length > 0 ? 
+            (product.images[0].url ? product.images[0].url : 
+              (typeof product.images[0] === 'object' && Object.keys(product.images[0]).length > 100 ? 
+                Object.keys(product.images[0])
+                  .filter(key => !isNaN(parseInt(key)))
+                  .sort((a, b) => parseInt(a) - parseInt(b))
+                  .map(key => product.images[0][key])
+                  .join('') : 
+                product.images[0])) : 
+            '/images/placeholder.jpg'} 
           variant="top" 
           className="product-image"
         />

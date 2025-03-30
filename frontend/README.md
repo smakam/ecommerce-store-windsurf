@@ -1,23 +1,71 @@
-# Getting Started with Create React App
+# E-commerce Store Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend for the e-commerce application, built with React.
 
-## Available Scripts
+## Features
+
+- User authentication (JWT, Google OAuth)
+- Product browsing and searching
+- Shopping cart functionality
+- Order management
+- Payment integration with Razorpay
+- Responsive design
+
+## Tech Stack
+
+- React.js
+- Redux for state management
+- React Router for navigation
+- Axios for API requests
+- Material-UI for styling
+
+## Deployment to Vercel
+
+### Prerequisites
+
+1. Create a Vercel account at [vercel.com](https://vercel.com/)
+2. Install the Vercel CLI: `npm install -g vercel`
+3. Backend API should be deployed on Render
+
+### Environment Variables
+
+Create a `.env.production` file with the following variables:
+
+```
+REACT_APP_API_URL=https://your-render-app.onrender.com/api
+REACT_APP_RAZORPAY_KEY_ID=your_razorpay_key_id
+```
+
+Replace `your-render-app.onrender.com` with your actual Render app URL.
+
+### Deployment Steps
+
+1. Login to Vercel CLI: `vercel login`
+2. Deploy the app: `vercel`
+3. Follow the prompts to configure your project
+4. For production deployment: `vercel --prod`
+
+Alternatively, you can deploy directly from the Vercel dashboard:
+
+1. Import your GitHub repository
+2. Configure the project settings
+3. Add the environment variables
+4. Deploy
+
+## Development
+
+### Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+#### `npm start`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+#### `npm test`
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Launches the test runner in the interactive watch mode.
 
 ### `npm run build`
 

@@ -24,7 +24,16 @@ const ProductCarousel = () => {
         <Carousel.Item key={product._id}>
           <Link to={`/product/${product._id}`}>
             <Image 
-              src={product.images[0]} 
+              src={product.images && product.images.length > 0 ? 
+                (product.images[0].url ? product.images[0].url : 
+                  (typeof product.images[0] === 'object' && Object.keys(product.images[0]).length > 100 ? 
+                    Object.keys(product.images[0])
+                      .filter(key => !isNaN(parseInt(key)))
+                      .sort((a, b) => parseInt(a) - parseInt(b))
+                      .map(key => product.images[0][key])
+                      .join('') : 
+                    product.images[0])) : 
+                '/images/placeholder.jpg'} 
               alt={product.name} 
               fluid 
               className="carousel-image"

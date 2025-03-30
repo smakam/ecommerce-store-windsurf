@@ -245,7 +245,14 @@ const ProductEditScreen = () => {
                 {images.map((img, index) => (
                   <div key={index} className="position-relative me-2 mb-2">
                     <img
-                      src={img}
+                      src={img.url ? img.url : 
+                        (typeof img === 'object' && Object.keys(img).length > 100 ? 
+                          Object.keys(img)
+                            .filter(key => !isNaN(parseInt(key)))
+                            .sort((a, b) => parseInt(a) - parseInt(b))
+                            .map(key => img[key])
+                            .join('') : 
+                          img)}
                       alt={`Product ${index}`}
                       style={{ width: '80px', height: '80px', objectFit: 'cover' }}
                     />

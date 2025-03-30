@@ -1,8 +1,10 @@
+const mongoose = require('mongoose');
 const Order = require('../models/order.model');
 const Cart = require('../models/cart.model');
 const Product = require('../models/product.model');
 const { validationResult } = require('express-validator');
 const Razorpay = require('razorpay');
+const { processImageData } = require('../utils/imageUtils');
 
 // Initialize Razorpay
 const razorpay = new Razorpay({
@@ -36,8 +38,9 @@ exports.createOrder = async (req, res) => {
 
     // Prepare order items with seller information
     const enrichedOrderItems = [];
+    const productUpdates = [];
     
-    // Check stock and update product quantities
+    // First pass: check stock and prepare updates
     for (const item of orderItems) {
       const product = await Product.findById(item.product);
       
@@ -51,15 +54,53 @@ exports.createOrder = async (req, res) => {
         });
       }
       
+      // Process image data using our utility function
+      const processedImage = processImageData(item.image);
+      
       // Add seller information to the order item
       enrichedOrderItems.push({
         ...item,
+        image: processedImage,
         seller: product.seller
       });
       
-      // Decrease stock
-      product.countInStock -= item.quantity;
-      await product.save();
+      // Prepare update operation for this product
+      productUpdates.push({
+        updateOne: {
+          filter: { _id: product._id },
+          update: { $inc: { countInStock: -item.quantity } }
+        }
+      });
+    }
+    
+    // Use direct MongoDB connection to update product stock
+    // This completely bypasses Mongoose validation
+    if (productUpdates.length > 0) {
+      try {
+        // Get MongoDB connection from mongoose
+        const db = mongoose.connection.db;
+        const productCollection = db.collection('products');
+        
+        // Perform direct MongoDB updates without validation
+        for (const item of orderItems) {
+          await productCollection.updateOne(
+            { _id: mongoose.Types.ObjectId.createFromHexString(item.product) },
+            { $inc: { countInStock: -item.quantity } }
+          );
+        }
+        
+        console.log('Successfully updated product stock using direct MongoDB connection');
+      } catch (updateError) {
+        console.error('Error updating product stock:', updateError);
+        // Fall back to individual updates with validation disabled
+        for (const item of orderItems) {
+          await Product.updateOne(
+            { _id: item.product },
+            { $inc: { countInStock: -item.quantity } },
+            { runValidators: false }
+          ).exec();
+        }
+      }
     }
     
     // Create order with enriched order items

@@ -39,10 +39,35 @@ const productSchema = new mongoose.Schema(
       required: [true, 'Product name is required'],
       trim: true,
     },
-    images: [
+    images: {
+      type: Array,
+      default: [],
+      // Using a custom validator to handle both formats of images
+      validate: {
+        validator: function(images) {
+          // Allow empty array
+          if (images.length === 0) return true;
+          
+          // For each image, check if it's either a string, has a url property, or has numbered keys (unusual format)
+          return images.every(img => {
+            return typeof img === 'string' || 
+                   (img && img.url) || 
+                   (typeof img === 'object' && Object.keys(img).some(key => !isNaN(parseInt(key))));
+          });
+        },
+        message: 'Images must be in a valid format'
+      }
+    },
+    
+    // Keep a separate field for image metadata that's not required
+    imageMetadata: [
       {
-        type: String,
-        required: true,
+        url: String,
+        publicId: String,
+        isMain: {
+          type: Boolean,
+          default: false,
+        }
       },
     ],
     brand: {

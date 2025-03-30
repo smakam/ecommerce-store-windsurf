@@ -33,10 +33,23 @@ export const addToCart = createAsyncThunk(
     try {
       const { data } = await api.get(`/api/products/${id}`);
 
+      // Process image data if it's in the unusual format
+      let imageData = data.images[0];
+      if (typeof imageData === 'object' && !imageData.url && Object.keys(imageData).length > 100) {
+        // Handle the case where image is an object with numbered properties
+        imageData = Object.keys(imageData)
+          .filter(key => !isNaN(parseInt(key)))
+          .sort((a, b) => parseInt(a) - parseInt(b))
+          .map(key => imageData[key])
+          .join('');
+      } else if (imageData && imageData.url) {
+        imageData = imageData.url;
+      }
+
       const item = {
         product: data._id,
         name: data.name,
-        image: data.images[0],
+        image: imageData,
         price: data.discountPrice > 0 ? data.discountPrice : data.price,
         countInStock: data.countInStock,
         seller: data.seller,

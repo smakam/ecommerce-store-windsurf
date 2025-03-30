@@ -72,7 +72,14 @@ const ProductScreen = () => {
               <div className="product-image-gallery mb-3">
                 {product.images && product.images.length > 0 && (
                   <Image
-                    src={product.images[activeImg]}
+                    src={product.images[activeImg].url ? product.images[activeImg].url : 
+                      (typeof product.images[activeImg] === 'object' && Object.keys(product.images[activeImg]).length > 100 ? 
+                        Object.keys(product.images[activeImg])
+                          .filter(key => !isNaN(parseInt(key)))
+                          .sort((a, b) => parseInt(a) - parseInt(b))
+                          .map(key => product.images[activeImg][key])
+                          .join('') : 
+                        product.images[activeImg])}
                     alt={product.name}
                     fluid
                     className="main-product-image"
@@ -83,7 +90,14 @@ const ProductScreen = () => {
                     {product.images.map((img, index) => (
                       <Col key={index} xs={3} className="px-1">
                         <Image
-                          src={img}
+                          src={img.url ? img.url : 
+                            (typeof img === 'object' && Object.keys(img).length > 100 ? 
+                              Object.keys(img)
+                                .filter(key => !isNaN(parseInt(key)))
+                                .sort((a, b) => parseInt(a) - parseInt(b))
+                                .map(key => img[key])
+                                .join('') : 
+                              img)}
                           alt={`${product.name}-${index}`}
                           fluid
                           className={`thumbnail-image ${activeImg === index ? 'active' : ''}`}
