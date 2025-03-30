@@ -1,31 +1,25 @@
 // Configuration for the frontend application
 // This file handles environment variables for different environments
 
-// Import production config if in production mode
-let productionConfig = null;
-if (process.env.NODE_ENV === 'production') {
-  try {
-    productionConfig = require('./config.production').default;
-    console.log('Using production configuration');
-  } catch (error) {
-    console.error('Failed to load production config:', error);
-  }
-}
+// Directly use the production configuration in production mode
+// This ensures the correct URLs are used in the deployed application
+const API_URL = process.env.NODE_ENV === 'production' 
+  ? 'https://ecommerce-store-windsurf.onrender.com/api'
+  : process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
-// API URL - use production config, env var, or default to localhost
-const API_URL = (productionConfig && productionConfig.API_URL) || 
-                process.env.REACT_APP_API_URL || 
-                'http://localhost:5001/api';
+// Log the current environment and API URL for debugging
+console.log('Current environment:', process.env.NODE_ENV);
+console.log('Using API URL:', API_URL);
 
 // Razorpay Key ID for payment integration
-const RAZORPAY_KEY_ID = (productionConfig && productionConfig.RAZORPAY_KEY_ID) || 
-                        process.env.REACT_APP_RAZORPAY_KEY_ID || 
-                        'rzp_test_tHLftLa9DvBJyg';
+const RAZORPAY_KEY_ID = process.env.NODE_ENV === 'production'
+  ? 'rzp_test_tHLftLa9DvBJyg'
+  : process.env.REACT_APP_RAZORPAY_KEY_ID || 'rzp_test_tHLftLa9DvBJyg';
 
 // Google OAuth Client ID
-const GOOGLE_CLIENT_ID = (productionConfig && productionConfig.GOOGLE_CLIENT_ID) || 
-                         process.env.REACT_APP_GOOGLE_CLIENT_ID || 
-                         '652447041636-1bsvl5ifrkr8iut9nkabj3ju551k12dm.apps.googleusercontent.com';
+const GOOGLE_CLIENT_ID = process.env.NODE_ENV === 'production'
+  ? '652447041636-1bsvl5ifrkr8iut9nkabj3ju551k12dm.apps.googleusercontent.com'
+  : process.env.REACT_APP_GOOGLE_CLIENT_ID || '652447041636-1bsvl5ifrkr8iut9nkabj3ju551k12dm.apps.googleusercontent.com';
 
 // Export configuration variables
 const config = {
