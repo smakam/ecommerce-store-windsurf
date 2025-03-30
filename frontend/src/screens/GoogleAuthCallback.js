@@ -4,6 +4,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Spinner } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import { login } from '../redux/slices/authSlice';
+import api from '../api/axios';
 
 const GoogleAuthCallback = () => {
   const dispatch = useDispatch();
@@ -25,17 +26,15 @@ const GoogleAuthCallback = () => {
       // Fetch user info using the token
       const fetchUserInfo = async () => {
         try {
-          const response = await fetch('/api/auth/profile', {
+          // Use the axios instance with the correct baseURL instead of fetch
+          const response = await api.get('/auth/profile', {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
           
-          if (!response.ok) {
-            throw new Error('Failed to fetch user data');
-          }
-          
-          const userData = await response.json();
+          // Axios returns data directly
+          const userData = response.data;
           
           // Create complete user info object
           const userInfo = {
