@@ -323,13 +323,57 @@ exports.googleAuthCallback = (req, res, next) => {
     
     if (!user) {
       console.log('No user returned from Google Auth');
-      return res.redirect(`${process.env.FRONTEND_URL}/login?error=auth_failed`);
+      
+      // Get the origin from the request headers or use the FRONTEND_URL as fallback
+      const origin = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL;
+      console.log('Request origin (error):', origin);
+      
+      // Determine which frontend URL to use for error redirect
+      let errorRedirectUrl;
+      
+      // Check if the request is coming from the preview URL
+      if (origin && origin.includes('ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app')) {
+        errorRedirectUrl = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login?error=auth_failed';
+      } 
+      // Check if the request is coming from localhost
+      else if (origin && origin.includes('localhost')) {
+        errorRedirectUrl = 'http://localhost:3000/login?error=auth_failed';
+      }
+      // Default to the main production URL
+      else {
+        errorRedirectUrl = `${process.env.FRONTEND_URL}/login?error=auth_failed`;
+      }
+      
+      console.log('Error redirecting to:', errorRedirectUrl);
+      return res.redirect(errorRedirectUrl);
     }
 
     console.log('Google Auth Success, User:', user.email);
     const token = generateToken(user._id);
     
+    // Get the origin from the request headers or use the FRONTEND_URL as fallback
+    const origin = req.headers.origin || req.headers.referer || process.env.FRONTEND_URL;
+    console.log('Request origin:', origin);
+    
+    // Determine which frontend URL to use for redirect
+    let redirectUrl;
+    
+    // Check if the request is coming from the preview URL
+    if (origin && origin.includes('ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app')) {
+      redirectUrl = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/success?token=' + token;
+    } 
+    // Check if the request is coming from localhost
+    else if (origin && origin.includes('localhost')) {
+      redirectUrl = 'http://localhost:3000/login/success?token=' + token;
+    }
+    // Default to the main production URL
+    else {
+      redirectUrl = `${process.env.FRONTEND_URL}/login/success?token=${token}`;
+    }
+    
+    console.log('Redirecting to:', redirectUrl);
+    
     // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL}/login/success?token=${token}`);
+    res.redirect(redirectUrl);
   })(req, res, next);
 };
