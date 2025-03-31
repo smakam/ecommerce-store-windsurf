@@ -34,6 +34,8 @@ import GoogleAuthCallback from './screens/GoogleAuthCallback';
 import GoogleAuthDebug from './screens/GoogleAuthDebug';
 import DirectLoginHandler from './screens/DirectLoginHandler';
 import TokenHandler from './screens/TokenHandler';
+import SimpleTokenHandler from './screens/SimpleTokenHandler';
+import OAuthHandler from './screens/OAuthHandler';
 
 function App() {
   return (
@@ -68,7 +70,8 @@ function App() {
             <Route path="/login/success" element={<GoogleAuthCallback />} />
             <Route path="/login/debug" element={<GoogleAuthDebug />} />
             <Route path="/login/direct" element={<DirectLoginHandler />} />
-            <Route path="/login/token" element={<TokenHandler />} />
+            <Route path="/login/token" element={<SimpleTokenHandler />} />
+            <Route path="/login/oauth" element={<OAuthHandler />} />
           </Routes>
         </Container>
       </main>
