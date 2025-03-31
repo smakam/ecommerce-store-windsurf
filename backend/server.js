@@ -19,6 +19,9 @@ connectDB();
 const allowedOrigins = [
   'https://ecommerce-store-windsurf.vercel.app',
   'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app',
+  'https://ecommerce-store-windsurf-re8u2hcai-srees-projects-ef0574fa.vercel.app',
+  // Include all possible Vercel preview URLs
+  /https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app/,
   // Include localhost for development
   'http://localhost:3000',
   // Allow file:// protocol for testing
@@ -40,9 +43,17 @@ app.use(cors({
     // Special handling for file:// protocol (shows up as 'null')
     if (origin === 'null') return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) === -1) {
+    // Check against string origins and regex patterns
+    const allowed = allowedOrigins.some(allowedOrigin => {
+      if (allowedOrigin instanceof RegExp) {
+        return allowedOrigin.test(origin);
+      }
+      return allowedOrigin === origin;
+    });
+    
+    if (!allowed) {
       console.log('CORS blocked origin:', origin);
-      console.log('Allowed origins:', allowedOrigins);
+      console.log('Allowed origins:', allowedOrigins.map(o => o instanceof RegExp ? o.toString() : o));
       // Don't block the request, just log it
       return callback(null, true);
     }
