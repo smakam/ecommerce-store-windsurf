@@ -47,17 +47,35 @@ export const googleLoginSuccess = createAsyncThunk(
   'auth/googleLoginSuccess',
   async (token, { rejectWithValue }) => {
     try {
-      console.log('Processing Google login with token');
+      console.log('Processing Google login with token:', token ? `${token.substring(0, 20)}...` : 'No token');
       
-      // Get user profile using the token
-      const config = {
+      // Try a direct fetch request instead of using axios
+      console.log('Making direct fetch request to profile endpoint');
+      
+      // Use the full URL for the API request
+      const apiUrl = 'https://ecommerce-store-windsurf.onrender.com/api/auth/profile';
+      console.log('API URL:', apiUrl);
+      
+      const response = await fetch(apiUrl, {
+        method: 'GET',
         headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      };
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
       
-      // Use the auth/profile endpoint to get user data
-      const { data } = await api.get('/auth/profile', config);
+      console.log('Fetch response status:', response.status);
+      console.log('Fetch response ok:', response.ok);
+      
+      if (!response.ok) {
+        // If the response is not ok, try to get the text to see what's wrong
+        const errorText = await response.text();
+        console.error('Error response text:', errorText);
+        throw new Error(`API request failed with status ${response.status}: ${errorText}`);
+      }
+      
+      const data = await response.json();
+      console.log('API response data:', data);
       
       // Create the complete user info object with token
       const userInfo = {
@@ -65,23 +83,19 @@ export const googleLoginSuccess = createAsyncThunk(
         token,
       };
       
+      console.log('Storing user info in localStorage');
       // Store in localStorage
       localStorage.setItem('userInfo', JSON.stringify(userInfo));
       
       return userInfo;
     } catch (error) {
       console.error('Google login error:', error);
-      
-      // Detailed error logging
-      if (error.response) {
-        console.error('Error response data:', error.response.data);
-        console.error('Error response status:', error.response.status);
-      }
+      console.error('Error name:', error.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
       
       return rejectWithValue(
-        error.response && error.response.data.message
-          ? error.response.data.message
-          : 'Failed to authenticate with Google. Please try again.'
+        'Failed to authenticate with Google. Please try again.'
       );
     }
   }
