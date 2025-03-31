@@ -31,6 +31,7 @@ import VerifyEmailScreen from './screens/VerifyEmailScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import GoogleAuthCallback from './screens/GoogleAuthCallback';
+import GoogleAuthDebug from './screens/GoogleAuthDebug';
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPasswordScreen />} />
             <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
             <Route path="/login/success" element={<GoogleAuthCallback />} />
+            <Route path="/login/debug" element={<GoogleAuthDebug />} />
           </Routes>
         </Container>
       </main>
