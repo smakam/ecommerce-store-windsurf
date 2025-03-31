@@ -32,6 +32,7 @@ import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 import ResetPasswordScreen from './screens/ResetPasswordScreen';
 import GoogleAuthCallback from './screens/GoogleAuthCallback';
 import GoogleAuthDebug from './screens/GoogleAuthDebug';
+import DirectLoginHandler from './screens/DirectLoginHandler';
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
             <Route path="/reset-password/:token" element={<ResetPasswordScreen />} />
             <Route path="/login/success" element={<GoogleAuthCallback />} />
             <Route path="/login/debug" element={<GoogleAuthDebug />} />
+            <Route path="/login/direct" element={<DirectLoginHandler />} />
           </Routes>
         </Container>
       </main>

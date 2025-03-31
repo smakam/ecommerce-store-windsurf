@@ -357,18 +357,18 @@ exports.googleAuthCallback = (req, res, next) => {
         // Extract the exact preview URL from the origin
         const previewUrlMatch = origin.match(/(https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app)/i);
         const previewUrl = previewUrlMatch ? previewUrlMatch[1] : process.env.FRONTEND_URL;
-        errorRedirectUrl = `${previewUrl}/login/debug?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
-        console.log('Using preview URL for error redirect to debug page:', errorRedirectUrl);
+        errorRedirectUrl = `${previewUrl}/login/direct?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
+        console.log('Using preview URL for error redirect to direct login handler:', errorRedirectUrl);
       } 
       // Check if the request is coming from localhost
       else if (origin && origin.includes('localhost')) {
-        errorRedirectUrl = `http://localhost:3000/login/debug?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
-        console.log('Using localhost for error redirect to debug page:', errorRedirectUrl);
+        errorRedirectUrl = `http://localhost:3000/login/direct?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
+        console.log('Using localhost for error redirect to direct login handler:', errorRedirectUrl);
       }
       // Default to the main production URL
       else {
-        errorRedirectUrl = `${process.env.FRONTEND_URL}/login/debug?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
-        console.log('Using production URL for error redirect to debug page:', errorRedirectUrl);
+        errorRedirectUrl = `${process.env.FRONTEND_URL}/login/direct?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
+        console.log('Using production URL for error redirect to direct login handler:', errorRedirectUrl);
       }
       
       // Add additional debug information to the response headers
@@ -396,19 +396,19 @@ exports.googleAuthCallback = (req, res, next) => {
       const previewUrlMatch = origin.match(/(https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app)/i);
       const previewUrl = previewUrlMatch ? previewUrlMatch[1] : process.env.FRONTEND_URL;
       
-      // Use debug page instead of success page
-      redirectUrl = `${previewUrl}/login/debug?token=${token}&source=google_oauth&time=${Date.now()}`;
-      console.log('Using preview URL for redirect to debug page:', redirectUrl);
+      // Use direct login handler
+      redirectUrl = `${previewUrl}/login/direct?token=${token}&source=google_oauth&time=${Date.now()}`;
+      console.log('Using preview URL for redirect to direct login handler:', redirectUrl);
     } 
     // Check if the request is coming from localhost
     else if (origin && origin.includes('localhost')) {
-      redirectUrl = `http://localhost:3000/login/debug?token=${token}&source=google_oauth&time=${Date.now()}`;
-      console.log('Using localhost for redirect to debug page:', redirectUrl);
+      redirectUrl = `http://localhost:3000/login/direct?token=${token}&source=google_oauth&time=${Date.now()}`;
+      console.log('Using localhost for redirect to direct login handler:', redirectUrl);
     }
     // Default to the main production URL
     else {
-      redirectUrl = `${process.env.FRONTEND_URL}/login/debug?token=${token}&source=google_oauth&time=${Date.now()}`;
-      console.log('Using production URL for redirect to debug page:', redirectUrl);
+      redirectUrl = `${process.env.FRONTEND_URL}/login/direct?token=${token}&source=google_oauth&time=${Date.now()}`;
+      console.log('Using production URL for redirect to direct login handler:', redirectUrl);
     }
     
     // Add additional debug information to the response headers
