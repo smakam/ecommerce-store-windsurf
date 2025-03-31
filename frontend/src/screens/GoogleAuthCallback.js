@@ -6,6 +6,8 @@ import { toast } from 'react-toastify';
 import { googleLoginSuccess } from '../redux/slices/authSlice';
 
 const GoogleAuthCallback = () => {
+  console.log('GoogleAuthCallback component rendering');
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,12 +17,27 @@ const GoogleAuthCallback = () => {
   // Get auth state from Redux
   const { userInfo, loading: authLoading, error: authError } = useSelector((state) => state.auth);
   
+  // Log component lifecycle
   useEffect(() => {
+    console.log('GoogleAuthCallback component mounted');
+    return () => {
+      console.log('GoogleAuthCallback component unmounting');
+    };
+  }, []);
+  
+  useEffect(() => {
+    console.log('GoogleAuthCallback: First useEffect triggered');
+    console.log('Location search:', location.search);
+    
     const params = new URLSearchParams(location.search);
     const token = params.get('token');
     const errorParam = params.get('error');
     
+    console.log('Token from URL:', token ? `${token.substring(0, 20)}...` : 'No token');
+    console.log('Error from URL:', errorParam);
+    
     if (errorParam) {
+      console.error('Google authentication error parameter detected:', errorParam);
       setError('Google authentication failed. Please try again.');
       setLoading(false);
       toast.error('Google authentication failed. Please try again.');
@@ -29,6 +46,7 @@ const GoogleAuthCallback = () => {
     }
     
     if (!token) {
+      console.error('No token received in callback URL');
       setError('Authentication failed. No token received.');
       setLoading(false);
       toast.error('Authentication failed. No token received.');
@@ -36,6 +54,7 @@ const GoogleAuthCallback = () => {
       return;
     }
     
+    console.log('Dispatching googleLoginSuccess with token');
     // Dispatch action to handle Google login success
     dispatch(googleLoginSuccess(token));
   }, [dispatch, navigate, location]);

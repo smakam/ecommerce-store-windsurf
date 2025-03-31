@@ -14,19 +14,46 @@ const api = axios.create({
   timeout: 10000,
 });
 
+// Log all requests for debugging
+console.log('Axios instance created with baseURL:', config.API_URL);
+
 // Add a request interceptor to include the auth token in all requests
 api.interceptors.request.use(
   (config) => {
+    console.log('Request interceptor called for URL:', config.url);
+    
     const userInfo = localStorage.getItem('userInfo');
+    console.log('userInfo in localStorage:', userInfo ? 'exists' : 'does not exist');
+    
     if (userInfo) {
-      const { token } = JSON.parse(userInfo);
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+      try {
+        const parsedUserInfo = JSON.parse(userInfo);
+        console.log('Parsed userInfo:', { ...parsedUserInfo, token: parsedUserInfo.token ? `${parsedUserInfo.token.substring(0, 20)}...` : 'none' });
+        
+        const { token } = parsedUserInfo;
+        if (token) {
+          console.log('Adding token to request headers');
+          config.headers.Authorization = `Bearer ${token}`;
+        } else {
+          console.log('No token found in userInfo');
+        }
+      } catch (error) {
+        console.error('Error parsing userInfo from localStorage:', error);
       }
+    } else {
+      console.log('No userInfo found in localStorage');
     }
+    
+    console.log('Final request config:', {
+      url: config.url,
+      method: config.method,
+      headers: { ...config.headers, Authorization: config.headers.Authorization ? 'Bearer token exists' : 'No Bearer token' }
+    });
+    
     return config;
   },
   (error) => {
+    console.error('Request interceptor error:', error);
     return Promise.reject(error);
   }
 );
