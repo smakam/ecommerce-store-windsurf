@@ -4,8 +4,8 @@
 // Directly use the production configuration in production mode
 // This ensures the correct URLs are used in the deployed application
 const API_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://ecommerce-store-windsurf.onrender.com/api'
-  : process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+  ? 'https://ecommerce-store-windsurf.onrender.com'
+  : process.env.REACT_APP_API_URL || 'http://localhost:5001';
 
 // Ensure there's no duplicate /api in the URL
 console.log('Original API URL:', API_URL);

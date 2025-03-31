@@ -17,12 +17,23 @@ export const getProducts = createAsyncThunk(
   'product/getProducts',
   async ({ keyword = '', pageNumber = '', category = '', sort = '' }, { rejectWithValue }) => {
     try {
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.get(
-        `/products?keyword=${keyword}&page=${pageNumber}&category=${category}&sort=${sort}`
-      );
+      console.log('Fetching products with params:', { keyword, pageNumber, category, sort });
+      
+      // Build the URL with proper query parameters
+      // We need to add the /api prefix to all endpoints
+      const url = `/api/products?keyword=${encodeURIComponent(keyword)}&page=${encodeURIComponent(pageNumber)}`;
+      
+      // Only add category and sort if they have values
+      const urlWithParams = category ? `${url}&category=${encodeURIComponent(category)}` : url;
+      const finalUrl = sort ? `${urlWithParams}&sort=${encodeURIComponent(sort)}` : urlWithParams;
+      
+      console.log('Making API request to:', finalUrl);
+      
+      const { data } = await api.get(finalUrl);
+      console.log('Products data received:', { count: data.products?.length, page: data.page, pages: data.pages });
       return data;
     } catch (error) {
+      console.error('Error fetching products:', error);
       return rejectWithValue(
         error.response && error.response.data.message
           ? error.response.data.message
@@ -37,8 +48,8 @@ export const getProductDetails = createAsyncThunk(
   'product/getProductDetails',
   async (id, { rejectWithValue }) => {
     try {
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.get(`/products/${id}`);
+      // Add the /api prefix to the endpoint
+      const { data } = await api.get(`/api/products/${id}`);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -66,8 +77,8 @@ export const createProductReview = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
-      await api.post(`/products/${productId}/reviews`, review, config);
+      // Add the /api prefix to the endpoint
+      await api.post(`/api/products/${productId}/reviews`, review, config);
       return { success: true };
     } catch (error) {
       return rejectWithValue(
@@ -84,8 +95,8 @@ export const getTopProducts = createAsyncThunk(
   'product/getTopProducts',
   async (_, { rejectWithValue }) => {
     try {
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.get('/products/top');
+      // Add the /api prefix to the endpoint
+      const { data } = await api.get('/api/products/top');
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -113,8 +124,8 @@ export const createProduct = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.post('/products', productData, config);
+      // Add the /api prefix to the endpoint
+      const { data } = await api.post('/api/products', productData, config);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -142,8 +153,8 @@ export const updateProduct = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.put(`/products/${productId}`, productData, config);
+      // Add the /api prefix to the endpoint
+      const { data } = await api.put(`/api/products/${productId}`, productData, config);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -170,8 +181,8 @@ export const deleteProduct = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
-      await api.delete(`/products/${id}`, config);
+      // Add the /api prefix to the endpoint
+      await api.delete(`/api/products/${id}`, config);
       return id;
     } catch (error) {
       return rejectWithValue(
@@ -198,8 +209,8 @@ export const getSellerProducts = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.get(`/products/seller?page=${pageNumber}`, config);
+      // Add the /api prefix to the endpoint
+      const { data } = await api.get(`/api/products/seller?page=${pageNumber}`, config);
       return data;
     } catch (error) {
       return rejectWithValue(

@@ -24,9 +24,9 @@ export const register = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
+      // Add the /api prefix to the endpoint
       const { data } = await api.post(
-        '/auth/register',
+        '/api/auth/register',
         { name, email, password, role },
         config
       );
@@ -45,25 +45,24 @@ export const register = createAsyncThunk(
 // Google Login Success
 export const googleLoginSuccess = createAsyncThunk(
   'auth/googleLoginSuccess',
-  async (token, { rejectWithValue }) => {
+  async (userData, { rejectWithValue }) => {
     try {
-      console.log('Processing Google login with token:', token ? `${token.substring(0, 20)}...` : 'No token');
+      console.log('Processing Google login with user data:', {
+        id: userData._id,
+        name: userData.name,
+        email: userData.email,
+        token: userData.token ? `${userData.token.substring(0, 20)}...` : 'No token'
+      });
       
-      // Skip the API call and just use the token directly
-      console.log('Skipping API call and using token directly');
+      // The userData already contains all the information we need
+      // including _id, name, email, role, token, and isAuthenticated
+      console.log('Using complete user data from API response');
       
-      // Create a minimal user info object with the token
-      // The actual user data will be loaded when needed
-      const userInfo = {
-        token,
-        isAuthenticated: true
-      };
-      
-      console.log('Storing user info in localStorage');
       // Store in localStorage
-      localStorage.setItem('userInfo', JSON.stringify(userInfo));
+      console.log('Storing complete user info in localStorage');
+      localStorage.setItem('userInfo', JSON.stringify(userData));
       
-      return userInfo;
+      return userData;
     } catch (error) {
       console.error('Google login error:', error);
       console.error('Error name:', error.name);
@@ -88,9 +87,9 @@ export const login = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
+      // Add the /api prefix to the endpoint
       const { data } = await api.post(
-        '/auth/login',
+        '/api/auth/login',
         { email, password },
         config
       );
@@ -122,8 +121,8 @@ export const verifyEmail = createAsyncThunk(
   'auth/verifyEmail',
   async (token, { rejectWithValue }) => {
     try {
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.get(`/auth/verify-email/${token}`);
+      // Add the /api prefix to the endpoint
+      const { data } = await api.get(`/api/auth/verify-email/${token}`);
       return data;
     } catch (error) {
       return rejectWithValue(
@@ -146,9 +145,9 @@ export const forgotPassword = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
+      // Add the /api prefix to the endpoint
       const { data } = await api.post(
-        '/auth/forgot-password',
+        '/api/auth/forgot-password',
         { email },
         config
       );
@@ -175,9 +174,9 @@ export const resetPassword = createAsyncThunk(
         },
       };
 
-      // Remove the duplicate /api since it's already in the baseURL
+      // Add the /api prefix to the endpoint
       const { data } = await api.put(
-        `/auth/reset-password/${token}`,
+        `/api/auth/reset-password/${token}`,
         { password },
         config
       );
@@ -204,8 +203,8 @@ export const updateProfile = createAsyncThunk(
 
       const config = {};
 
-      // Remove the duplicate /api since it's already in the baseURL
-      const { data } = await api.put('/auth/profile', user, config);
+      // Add the /api prefix to the endpoint
+      const { data } = await api.put('/api/auth/profile', user, config);
 
       localStorage.setItem('userInfo', JSON.stringify(data));
 

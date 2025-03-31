@@ -22,6 +22,11 @@ api.interceptors.request.use(
   (config) => {
     console.log('Request interceptor called for URL:', config.url);
     
+    // Add a timestamp to GET requests to prevent caching issues
+    if (config.method === 'get') {
+      config.params = { ...config.params, _t: new Date().getTime() };
+    }
+    
     const userInfo = localStorage.getItem('userInfo');
     console.log('userInfo in localStorage:', userInfo ? 'exists' : 'does not exist');
     
