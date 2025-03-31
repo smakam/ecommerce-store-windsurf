@@ -6,13 +6,20 @@ const authenticateJWT = passport.authenticate('jwt', { session: false });
 
 // Middleware to check if user is authenticated
 const isAuthenticated = (req, res, next) => {
+  console.log('isAuthenticated middleware called');
+  console.log('Authorization header:', req.headers.authorization);
+  
   passport.authenticate('jwt', { session: false }, (err, user, info) => {
     if (err) {
+      console.error('JWT Authentication error:', err);
       return next(err);
     }
     if (!user) {
+      console.error('JWT Authentication failed. Info:', info);
+      console.error('JWT Secret being used:', process.env.JWT_SECRET ? 'JWT_SECRET is set' : 'JWT_SECRET is NOT set');
       return res.status(401).json({ message: 'Unauthorized. Please login to access this resource' });
     }
+    console.log('JWT Authentication successful for user:', user.email);
     req.user = user;
     next();
   })(req, res, next);

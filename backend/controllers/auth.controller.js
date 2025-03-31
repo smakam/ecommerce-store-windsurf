@@ -148,16 +148,22 @@ exports.loginUser = async (req, res) => {
 // @route   GET /api/auth/profile
 // @access  Private
 exports.getUserProfile = async (req, res) => {
+  console.log('getUserProfile called');
+  console.log('req.user:', req.user);
+  
   try {
+    console.log('Attempting to find user with ID:', req.user._id);
     const user = await User.findById(req.user._id).select('-password');
 
     if (user) {
+      console.log('User found:', user.email);
       res.json(user);
     } else {
+      console.error('User not found with ID:', req.user._id);
       res.status(404).json({ message: 'User not found' });
     }
   } catch (error) {
-    console.error(error);
+    console.error('Error in getUserProfile:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };

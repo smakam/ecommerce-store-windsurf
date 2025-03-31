@@ -26,16 +26,27 @@ module.exports = (passport) => {
     secretOrKey: process.env.JWT_SECRET
   };
 
+  console.log('JWT Strategy initialized with secret:', process.env.JWT_SECRET ? 'JWT_SECRET is set' : 'JWT_SECRET is NOT set');
+  console.log('JWT Strategy options:', { ...opts, secretOrKey: process.env.JWT_SECRET ? '[SECRET HIDDEN]' : 'NOT SET' });
+
   passport.use(
     new JwtStrategy(opts, async (jwt_payload, done) => {
+      console.log('JWT Strategy verifying token with payload:', {
+        id: jwt_payload.id,
+        iat: jwt_payload.iat,
+        exp: jwt_payload.exp
+      });
+      
       try {
         const user = await User.findById(jwt_payload.id);
         if (user) {
+          console.log('JWT Strategy found user:', user.email);
           return done(null, user);
         }
+        console.log('JWT Strategy could not find user with ID:', jwt_payload.id);
         return done(null, false);
       } catch (err) {
-        console.error(err);
+        console.error('JWT Strategy error:', err);
         return done(err, false);
       }
     })
