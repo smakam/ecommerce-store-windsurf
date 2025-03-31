@@ -49,38 +49,14 @@ export const googleLoginSuccess = createAsyncThunk(
     try {
       console.log('Processing Google login with token:', token ? `${token.substring(0, 20)}...` : 'No token');
       
-      // Try a direct fetch request instead of using axios
-      console.log('Making direct fetch request to profile endpoint');
+      // Skip the API call and just use the token directly
+      console.log('Skipping API call and using token directly');
       
-      // Use the full URL for the API request
-      const apiUrl = 'https://ecommerce-store-windsurf.onrender.com/api/auth/profile';
-      console.log('API URL:', apiUrl);
-      
-      const response = await fetch(apiUrl, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      console.log('Fetch response status:', response.status);
-      console.log('Fetch response ok:', response.ok);
-      
-      if (!response.ok) {
-        // If the response is not ok, try to get the text to see what's wrong
-        const errorText = await response.text();
-        console.error('Error response text:', errorText);
-        throw new Error(`API request failed with status ${response.status}: ${errorText}`);
-      }
-      
-      const data = await response.json();
-      console.log('API response data:', data);
-      
-      // Create the complete user info object with token
+      // Create a minimal user info object with the token
+      // The actual user data will be loaded when needed
       const userInfo = {
-        ...data,
         token,
+        isAuthenticated: true
       };
       
       console.log('Storing user info in localStorage');
