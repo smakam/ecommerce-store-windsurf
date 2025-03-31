@@ -352,13 +352,17 @@ exports.googleAuthCallback = (req, res, next) => {
       // Determine which frontend URL to use for error redirect
       let errorRedirectUrl;
       
-      // Check if the request is coming from the preview URL
-      if (origin && origin.includes('ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app')) {
-        errorRedirectUrl = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login?error=auth_failed';
+      // Check if the request is coming from a Vercel preview URL
+      if (origin && /https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app/.test(origin)) {
+        // Extract the exact preview URL from the origin
+        const previewUrlMatch = origin.match(/(https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app)/i);
+        const previewUrl = previewUrlMatch ? previewUrlMatch[1] : process.env.FRONTEND_URL;
+        errorRedirectUrl = `${previewUrl}/login?error=auth_failed`;
+        console.log('Using preview URL for error redirect:', previewUrl);
       } 
       // Check if the request is coming from localhost
       else if (origin && origin.includes('localhost')) {
-        errorRedirectUrl = 'http://localhost:3000/login?error=auth_failed';
+        errorRedirectUrl = `http://localhost:3000/login?error=auth_failed`;
       }
       // Default to the main production URL
       else {
@@ -379,13 +383,17 @@ exports.googleAuthCallback = (req, res, next) => {
     // Determine which frontend URL to use for redirect
     let redirectUrl;
     
-    // Check if the request is coming from the preview URL
-    if (origin && origin.includes('ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app')) {
-      redirectUrl = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/success?token=' + token;
+    // Check if the request is coming from a Vercel preview URL
+    if (origin && /https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app/.test(origin)) {
+      // Extract the exact preview URL from the origin
+      const previewUrlMatch = origin.match(/(https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app)/i);
+      const previewUrl = previewUrlMatch ? previewUrlMatch[1] : process.env.FRONTEND_URL;
+      redirectUrl = `${previewUrl}/login/success?token=${token}`;
+      console.log('Using preview URL for redirect:', previewUrl);
     } 
     // Check if the request is coming from localhost
     else if (origin && origin.includes('localhost')) {
-      redirectUrl = 'http://localhost:3000/login/success?token=' + token;
+      redirectUrl = `http://localhost:3000/login/success?token=${token}`;
     }
     // Default to the main production URL
     else {
