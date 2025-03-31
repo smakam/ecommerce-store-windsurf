@@ -388,7 +388,23 @@ exports.googleAuthCallback = (req, res, next) => {
     console.log('Request origin:', origin);
     
     // Determine which frontend URL to use for redirect
+    // Log detailed information about the request and environment
+    console.log('======= GOOGLE OAUTH CALLBACK DEBUG INFO =======');
+    console.log('Request headers:', req.headers);
+    console.log('Request origin:', origin);
+    console.log('Environment variables:');
+    console.log('- FRONTEND_URL:', process.env.FRONTEND_URL);
+    console.log('- NODE_ENV:', process.env.NODE_ENV);
+    console.log('- GOOGLE_CALLBACK_URL:', process.env.GOOGLE_CALLBACK_URL);
+    console.log('Token generated successfully:', !!token);
+    console.log('Token length:', token ? token.length : 0);
+    console.log('Token preview:', token ? `${token.substring(0, 15)}...${token.substring(token.length - 10)}` : 'none');
+    
     let redirectUrl;
+    
+    // Also create a debug redirect URL that can be used for troubleshooting
+    const debugRedirectUrl = `${process.env.FRONTEND_URL}/login/debug-oauth#token=${token}&source=google_oauth&time=${Date.now()}`;
+    console.log('Debug redirect URL:', debugRedirectUrl);
     
     // Check if the request is coming from a Vercel preview URL
     if (origin && /https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app/.test(origin)) {
@@ -415,8 +431,11 @@ exports.googleAuthCallback = (req, res, next) => {
     res.setHeader('X-Auth-Debug-Token', token ? token.substring(0, 10) + '...' : 'none');
     res.setHeader('X-Auth-Debug-Origin', origin || 'none');
     res.setHeader('X-Auth-Debug-Time', new Date().toISOString());
+    res.setHeader('X-Auth-Debug-Redirect', redirectUrl);
+    res.setHeader('X-Auth-Debug-Frontend-URL', process.env.FRONTEND_URL);
     
     console.log('Redirecting to:', redirectUrl);
+    console.log('======= END GOOGLE OAUTH CALLBACK DEBUG INFO =======');
     
     // Redirect to frontend with token
     res.redirect(redirectUrl);

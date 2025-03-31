@@ -35,6 +35,7 @@ import GoogleAuthDebug from './screens/GoogleAuthDebug';
 import DirectLoginHandler from './screens/DirectLoginHandler';
 import TokenHandler from './screens/TokenHandler';
 import SimpleTokenHandler from './screens/SimpleTokenHandler';
+import OAuthDebugger from './screens/OAuthDebugger';
 import OAuthHandler from './screens/OAuthHandler';
 
 function App() {
@@ -72,6 +73,7 @@ function App() {
             <Route path="/login/direct" element={<DirectLoginHandler />} />
             <Route path="/login/token" element={<SimpleTokenHandler />} />
             <Route path="/login/oauth" element={<OAuthHandler />} />
+            <Route path="/login/debug-oauth" element={<OAuthDebugger />} />
           </Routes>
         </Container>
       </main>
