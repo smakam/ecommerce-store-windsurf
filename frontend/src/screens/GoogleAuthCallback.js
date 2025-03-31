@@ -54,9 +54,50 @@ const GoogleAuthCallback = () => {
       return;
     }
     
-    console.log('Dispatching googleLoginSuccess with token');
-    // Dispatch action to handle Google login success
-    dispatch(googleLoginSuccess(token));
+    // DIRECT TEST: Make a direct fetch request to test the token
+    console.log('Making direct fetch request to test token');
+    const testApiCall = async () => {
+      try {
+        const apiUrl = 'https://ecommerce-store-windsurf.onrender.com/api/auth/profile';
+        console.log('Testing API URL:', apiUrl);
+        console.log('Using token:', token ? `${token.substring(0, 20)}...` : 'No token');
+        
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        console.log('Test fetch response status:', response.status);
+        console.log('Test fetch response ok:', response.ok);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Test error response text:', errorText);
+          throw new Error(`Test API request failed with status ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        console.log('Test API response data:', data);
+        
+        // If the test is successful, proceed with the normal flow
+        console.log('Test successful, dispatching googleLoginSuccess with token');
+        dispatch(googleLoginSuccess(token));
+      } catch (error) {
+        console.error('Test API call error:', error);
+        console.error('Error name:', error.name);
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+        
+        setError('Error testing API: ' + error.message);
+        setLoading(false);
+        toast.error('Error testing API: ' + error.message);
+      }
+    };
+    
+    testApiCall();
   }, [dispatch, navigate, location]);
   
   // Watch for changes in auth state
