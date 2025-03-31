@@ -54,9 +54,33 @@ const GoogleAuthCallback = () => {
       return;
     }
     
-    // Store the token directly in localStorage as a backup
-    console.log('Storing token in localStorage as backup');
-    localStorage.setItem('userInfo', JSON.stringify({ token, isAuthenticated: true }));
+    // Validate the token format
+    if (!token.includes('.') || token.split('.').length !== 3) {
+      console.error('Invalid token format received');
+      setError('Invalid authentication token received. Please try again.');
+      setLoading(false);
+      toast.error('Invalid authentication token received');
+      setTimeout(() => navigate('/login'), 2000);
+      return;
+    }
+    
+    // Log token details for debugging
+    try {
+      const tokenParts = token.split('.');
+      const payload = JSON.parse(atob(tokenParts[1]));
+      console.log('Token payload:', { id: payload.id, iat: payload.iat, exp: payload.exp });
+      console.log('Token expiration:', new Date(payload.exp * 1000).toLocaleString());
+    } catch (e) {
+      console.error('Error parsing token payload:', e);
+    }
+    
+    // Store the token directly in localStorage
+    console.log('Storing token in localStorage');
+    localStorage.setItem('userInfo', JSON.stringify({ 
+      token, 
+      isAuthenticated: true,
+      loginTime: new Date().toISOString() 
+    }));
     
     // Dispatch the action to store the token in Redux
     console.log('Dispatching googleLoginSuccess with token');
@@ -64,7 +88,6 @@ const GoogleAuthCallback = () => {
       .unwrap()
       .then(() => {
         console.log('Successfully stored token in Redux');
-        // No need to make an additional API call here since we've already stored the token
       })
       .catch(error => {
         console.error('Error storing token in Redux:', error);

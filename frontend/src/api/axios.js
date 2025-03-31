@@ -28,12 +28,24 @@ api.interceptors.request.use(
     if (userInfo) {
       try {
         const parsedUserInfo = JSON.parse(userInfo);
-        console.log('Parsed userInfo:', { ...parsedUserInfo, token: parsedUserInfo.token ? `${parsedUserInfo.token.substring(0, 20)}...` : 'none' });
+        console.log('Parsed userInfo:', { 
+          ...parsedUserInfo, 
+          token: parsedUserInfo.token ? `${parsedUserInfo.token.substring(0, 20)}...` : 'none' 
+        });
         
-        const { token } = parsedUserInfo;
+        // Get token from userInfo
+        let token = parsedUserInfo.token;
+        
+        // Check if token exists and is properly formatted
         if (token) {
+          // Make sure token doesn't already have 'Bearer ' prefix
+          if (token.startsWith('Bearer ')) {
+            token = token.slice(7);
+          }
+          
           console.log('Adding token to request headers');
           config.headers.Authorization = `Bearer ${token}`;
+          console.log('Authorization header set:', `Bearer ${token.substring(0, 20)}...`);
         } else {
           console.log('No token found in userInfo');
         }
