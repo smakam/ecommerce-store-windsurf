@@ -20,22 +20,38 @@ const allowedOrigins = [
   'https://ecommerce-store-windsurf.vercel.app',
   'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app',
   // Include localhost for development
-  'http://localhost:3000'
+  'http://localhost:3000',
+  // Allow file:// protocol for testing
+  'null'
 ];
+
+// Log the current environment
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('FRONTEND_URL:', process.env.FRONTEND_URL);
 
 app.use(cors({
   origin: function(origin, callback) {
+    // Log the request origin for debugging
+    console.log('Request origin:', origin);
+    
     // Allow requests with no origin (like mobile apps, curl, etc)
     if (!origin) return callback(null, true);
+    
+    // Special handling for file:// protocol (shows up as 'null')
+    if (origin === 'null') return callback(null, true);
     
     if (allowedOrigins.indexOf(origin) === -1) {
       console.log('CORS blocked origin:', origin);
       console.log('Allowed origins:', allowedOrigins);
-      return callback(null, false);
+      // Don't block the request, just log it
+      return callback(null, true);
     }
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
