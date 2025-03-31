@@ -357,21 +357,18 @@ exports.googleAuthCallback = (req, res, next) => {
         // Extract the exact preview URL from the origin
         const previewUrlMatch = origin.match(/(https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app)/i);
         const previewUrl = previewUrlMatch ? previewUrlMatch[1] : process.env.FRONTEND_URL;
-        const backendUrl = req.protocol + '://' + req.get('host');
-        errorRedirectUrl = `${backendUrl}/oauth-success.html?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
-        console.log('Using backend URL for error redirect to static HTML page:', errorRedirectUrl);
+        errorRedirectUrl = `${process.env.FRONTEND_URL}/login/oauth?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
+        console.log('Using production URL for error redirect:', errorRedirectUrl);
       } 
       // Check if the request is coming from localhost
       else if (origin && origin.includes('localhost')) {
-        const backendUrl = req.protocol + '://' + req.get('host');
-        errorRedirectUrl = `${backendUrl}/oauth-success.html?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
-        console.log('Using backend URL for error redirect to static HTML page:', errorRedirectUrl);
+        errorRedirectUrl = `${process.env.FRONTEND_URL}/login/oauth?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
+        console.log('Using production URL for error redirect:', errorRedirectUrl);
       }
       // Default to the main production URL
       else {
-        const backendUrl = req.protocol + '://' + req.get('host');
-        errorRedirectUrl = `${backendUrl}/oauth-success.html?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
-        console.log('Using backend URL for error redirect to static HTML page:', errorRedirectUrl);
+        errorRedirectUrl = `${process.env.FRONTEND_URL}/login/oauth?error=auth_failed&source=google_oauth_error&time=${Date.now()}`;
+        console.log('Using production URL for error redirect:', errorRedirectUrl);
       }
       
       // Add additional debug information to the response headers
@@ -399,22 +396,19 @@ exports.googleAuthCallback = (req, res, next) => {
       const previewUrlMatch = origin.match(/(https:\/\/ecommerce-store-windsurf[-.a-z0-9]+-srees-projects-ef0574fa\.vercel\.app)/i);
       const previewUrl = previewUrlMatch ? previewUrlMatch[1] : process.env.FRONTEND_URL;
       
-      // Use backend-served static HTML page
-      const backendUrl = req.protocol + '://' + req.get('host');
-      redirectUrl = `${backendUrl}/oauth-success.html?token=${token}&source=google_oauth&time=${Date.now()}`;
-      console.log('Using backend URL for redirect to static HTML page:', redirectUrl);
-    } 
+      // Redirect directly to frontend with token using hash fragment
+      redirectUrl = `${previewUrl}/login/token#token=${token}&source=google_oauth&time=${Date.now()}`;
+      console.log('Using preview URL for direct frontend redirect:', redirectUrl);
+    }
     // Check if the request is coming from localhost
     else if (origin && origin.includes('localhost')) {
-      const backendUrl = req.protocol + '://' + req.get('host');
-      redirectUrl = `${backendUrl}/oauth-success.html?token=${token}&source=google_oauth&time=${Date.now()}`;
-      console.log('Using backend URL for redirect to static HTML page:', redirectUrl);
+      redirectUrl = `http://localhost:3000/login/token#token=${token}&source=google_oauth&time=${Date.now()}`;
+      console.log('Using localhost for direct frontend redirect:', redirectUrl);
     }
     // Default to the main production URL
     else {
-      const backendUrl = req.protocol + '://' + req.get('host');
-      redirectUrl = `${backendUrl}/oauth-success.html?token=${token}&source=google_oauth&time=${Date.now()}`;
-      console.log('Using backend URL for redirect to static HTML page:', redirectUrl);
+      redirectUrl = `${process.env.FRONTEND_URL}/login/token#token=${token}&source=google_oauth&time=${Date.now()}`;
+      console.log('Using production URL for direct frontend redirect:', redirectUrl);
     }
     
     // Add additional debug information to the response headers
@@ -427,4 +421,34 @@ exports.googleAuthCallback = (req, res, next) => {
     // Redirect to frontend with token
     res.redirect(redirectUrl);
   })(req, res, next);
+};
+
+// @desc    Verify token and return user information
+// @route   GET /api/auth/verify-token
+// @access  Private
+exports.verifyToken = async (req, res) => {
+  try {
+    // The auth middleware has already verified the token
+    // and attached the user to the request object
+    const user = req.user;
+    
+    console.log('Token verified successfully, returning user info:', {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    });
+    
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      token: req.token, // Return the token back
+      isAuthenticated: true
+    });
+  } catch (error) {
+    console.error('Error verifying token:', error);
+    res.status(401).json({ message: 'Invalid token' });
+  }
 };
