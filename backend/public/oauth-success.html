@@ -104,10 +104,17 @@
           }));
           document.getElementById('token-display').textContent += '\nToken successfully stored in localStorage';
           
-          // Auto-redirect after 3 seconds with token in URL fragment
+          // Add detailed debug info to the page
+          document.getElementById('token-display').textContent += '\n\nRedirect URL: ' + 
+            `https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/token#token=${encodeURIComponent(token)}`;
+          
+          // Auto-redirect after 5 seconds with token in URL fragment
           setTimeout(function() {
-            window.location.href = `https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/token#token=${encodeURIComponent(token)}`;
-          }, 3000);
+            const redirectUrl = `https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/token#token=${encodeURIComponent(token)}`;
+            console.log('Redirecting to:', redirectUrl);
+            document.getElementById('token-display').textContent += '\n\nRedirecting now...';
+            window.location.href = redirectUrl;
+          }, 5000);
         } catch (error) {
           document.getElementById('token-display').textContent += '\nError storing token: ' + error.message;
         }
@@ -124,7 +131,10 @@
       // Set up continue button
       document.getElementById('continue-btn').addEventListener('click', function() {
         if (token) {
-          window.location.href = `https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/token#token=${encodeURIComponent(token)}`;
+          const redirectUrl = `https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/login/token#token=${encodeURIComponent(token)}`;
+          console.log('Manual redirect to:', redirectUrl);
+          document.getElementById('token-display').textContent += '\n\nManually redirecting now...';
+          window.location.href = redirectUrl;
         } else {
           window.location.href = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/';
         }
