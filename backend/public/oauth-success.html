@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OAuth Success</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f8f9fa;
+    }
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 500px;
+    }
+    .success {
+      color: #28a745;
+    }
+    .error {
+      color: #dc3545;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+    pre {
+      text-align: left;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="main-container">
+    <div id="success-content" style="display: none;">
+      <h1>Authentication Successful</h1>
+      <p class="success">You have been successfully authenticated!</p>
+      <p>Your token has been saved. You can now return to the application.</p>
+    </div>
+    
+    <div id="error-content" style="display: none;">
+      <h1>Authentication Error</h1>
+      <p class="error" id="error-message">There was a problem with authentication.</p>
+      <p>Please try again or contact support if the issue persists.</p>
+    </div>
+    
+    <div id="token-info" style="margin-top: 20px;">
+      <h3>Token Information</h3>
+      <pre id="token-display">Loading...</pre>
+    </div>
+    
+    <button id="continue-btn">Continue to Homepage</button>
+    
+    <script>
+      // Get parameters from URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const token = urlParams.get('token');
+      const error = urlParams.get('error');
+      const source = urlParams.get('source');
+      const time = urlParams.get('time');
+      
+      // Show appropriate content based on whether we have a token or error
+      if (error) {
+        document.getElementById('error-content').style.display = 'block';
+        document.getElementById('error-message').textContent = `Authentication error: ${error}`;
+        document.getElementById('token-display').textContent = JSON.stringify({
+          error,
+          source,
+          time,
+          url: window.location.href
+        }, null, 2);
+      } else if (token) {
+        document.getElementById('success-content').style.display = 'block';
+        
+        // Display token info
+        document.getElementById('token-display').textContent = `Token exists (${token.substring(0, 10)}...)`;
+        
+        // Store token in localStorage
+        try {
+          localStorage.setItem('userInfo', JSON.stringify({
+            token,
+            isAuthenticated: true,
+            loginTime: new Date().toISOString()
+          }));
+          document.getElementById('token-display').textContent += '\nToken successfully stored in localStorage';
+          
+          // Auto-redirect after 3 seconds
+          setTimeout(function() {
+            window.location.href = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/';
+          }, 3000);
+        } catch (error) {
+          document.getElementById('token-display').textContent += '\nError storing token: ' + error.message;
+        }
+      } else {
+        document.getElementById('error-content').style.display = 'block';
+        document.getElementById('error-message').textContent = 'No authentication token found in URL';
+        document.getElementById('token-display').textContent = JSON.stringify({
+          source,
+          time,
+          url: window.location.href
+        }, null, 2);
+      }
+      
+      // Set up continue button
+      document.getElementById('continue-btn').addEventListener('click', function() {
+        window.location.href = 'https://ecommerce-store-windsurf-aji890kck-srees-projects-ef0574fa.vercel.app/';
+      });
+    </script>
+  </div>
+</body>
+</html>

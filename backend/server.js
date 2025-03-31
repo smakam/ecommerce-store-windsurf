@@ -67,6 +67,10 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Serve static files from the public directory
+app.use(express.static('public'));
+console.log('Serving static files from public directory');
+
 // Add session support for OAuth
 app.use(session({
   secret: process.env.JWT_SECRET,
