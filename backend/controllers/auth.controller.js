@@ -320,11 +320,26 @@ exports.googleAuth = (req, res, next) => {
 // @access  Public
 exports.googleAuthCallback = (req, res, next) => {
   console.log('Google Auth Callback Route Hit');
+  console.log('Request query:', req.query);
+  console.log('Request headers:', {
+    origin: req.headers.origin,
+    referer: req.headers.referer,
+    host: req.headers.host
+  });
+  console.log('Environment variables:', {
+    GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,
+    GOOGLE_CALLBACK_URL: process.env.GOOGLE_CALLBACK_URL,
+    FRONTEND_URL: process.env.FRONTEND_URL
+  });
   
-  passport.authenticate('google', { session: false }, (err, user) => {
+  passport.authenticate('google', { session: false }, (err, user, info) => {
     if (err) {
       console.error('Google Auth Error:', err);
       return next(err);
+    }
+    
+    if (info) {
+      console.log('Google Auth Info:', info);
     }
     
     if (!user) {
