@@ -76,11 +76,35 @@ const GoogleAuthCallback = () => {
     
     // Store the token directly in localStorage
     console.log('Storing token in localStorage');
-    localStorage.setItem('userInfo', JSON.stringify({ 
+    const userInfoData = { 
       token, 
       isAuthenticated: true,
-      loginTime: new Date().toISOString() 
-    }));
+      loginTime: new Date().toISOString(),
+      source: 'google_oauth'
+    };
+    
+    console.log('User info to be stored:', { 
+      ...userInfoData, 
+      token: userInfoData.token ? `${userInfoData.token.substring(0, 20)}...` : 'none' 
+    });
+    
+    localStorage.setItem('userInfo', JSON.stringify(userInfoData));
+    
+    // Verify the token was stored correctly
+    const storedUserInfo = localStorage.getItem('userInfo');
+    console.log('Verification - userInfo in localStorage:', storedUserInfo ? 'exists' : 'does not exist');
+    
+    if (storedUserInfo) {
+      try {
+        const parsedUserInfo = JSON.parse(storedUserInfo);
+        console.log('Verification - parsed userInfo:', { 
+          ...parsedUserInfo, 
+          token: parsedUserInfo.token ? `${parsedUserInfo.token.substring(0, 20)}...` : 'none' 
+        });
+      } catch (error) {
+        console.error('Error parsing stored userInfo:', error);
+      }
+    }
     
     // Dispatch the action to store the token in Redux
     console.log('Dispatching googleLoginSuccess with token');
@@ -98,19 +122,29 @@ const GoogleAuthCallback = () => {
     setLoading(false);
     toast.success('Successfully logged in with Google!');
     
-    // Navigate to home page
-    navigate('/');
+    // Add a delay before navigating to ensure token is properly processed
+    console.log('Waiting before navigation to ensure token is properly processed');
+    setTimeout(() => {
+      console.log('Now navigating to home page');
+      navigate('/');
+    }, 1500);
   }, [dispatch, navigate, location]);
   
   // Watch for changes in auth state
   useEffect(() => {
-    if (!authLoading && userInfo) {
-      // Successfully logged in
+    // Only handle auth state changes from Redux if we didn't already process the token from URL
+    // This prevents double navigation and race conditions
+    const tokenFromUrl = new URLSearchParams(location.search).get('token');
+    
+    if (!tokenFromUrl && !authLoading && userInfo) {
+      // Successfully logged in through Redux state change
+      console.log('Auth state changed in Redux - user logged in');
       setLoading(false);
       toast.success('Successfully logged in with Google!');
-      navigate('/');
-    } else if (!authLoading && authError) {
-      // Error occurred during login
+      setTimeout(() => navigate('/'), 1000);
+    } else if (!tokenFromUrl && !authLoading && authError) {
+      // Error occurred during login through Redux state change
+      console.log('Auth state changed in Redux - error occurred');
       setLoading(false);
       setError(authError);
       toast.error(authError || 'Authentication failed. Please try again.');
