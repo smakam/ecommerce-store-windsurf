@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OAuth Login Handler</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f8f9fa;
+    }
+    .container {
+      text-align: center;
+      background-color: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      max-width: 500px;
+    }
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #09f;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .success {
+      color: #28a745;
+    }
+    .error {
+      color: #dc3545;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover {
+      background-color: #0069d9;
+    }
+    pre {
+      text-align: left;
+      background-color: #f8f9fa;
+      padding: 10px;
+      border-radius: 4px;
+      overflow: auto;
+      max-height: 200px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>OAuth Login</h1>
+    <div id="status">Processing login...</div>
+    <div class="spinner" id="spinner"></div>
+    <div id="message"></div>
+    <div id="debug" style="margin-top: 20px; display: none;">
+      <h3>Debug Information</h3>
+      <pre id="debug-info"></pre>
+    </div>
+    <button id="continue-btn" style="display: none;">Continue to Homepage</button>
+    <button id="retry-btn" style="display: none; background-color: #6c757d;">Retry Login</button>
+    <button id="show-debug-btn" style="display: none; background-color: #17a2b8;">Show Debug Info</button>
+  </div>
+
+  <script>
+    // Function to get URL parameters
+    function getUrlParams() {
+      const params = {};
+      const queryString = window.location.search.substring(1);
+      const pairs = queryString.split('&');
+      
+      for (let i = 0; i < pairs.length; i++) {
+        const pair = pairs[i].split('=');
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+      }
+      
+      return params;
+    }
+
+    // Function to handle the login process
+    function handleLogin() {
+      const params = getUrlParams();
+      const statusElement = document.getElementById('status');
+      const messageElement = document.getElementById('message');
+      const spinnerElement = document.getElementById('spinner');
+      const continueBtn = document.getElementById('continue-btn');
+      const retryBtn = document.getElementById('retry-btn');
+      const showDebugBtn = document.getElementById('show-debug-btn');
+      const debugInfo = document.getElementById('debug-info');
+      
+      // Log parameters for debugging
+      console.log('URL parameters:', params);
+      debugInfo.textContent = JSON.stringify({
+        url: window.location.href,
+        params: params,
+        time: new Date().toISOString()
+      }, null, 2);
+      
+      // Check if token is present
+      if (params.token) {
+        try {
+          // Store token in localStorage
+          const userInfo = {
+            token: params.token,
+            isAuthenticated: true,
+            loginTime: new Date().toISOString()
+          };
+          
+          localStorage.setItem('userInfo', JSON.stringify(userInfo));
+          console.log('Token stored in localStorage');
+          
+          // Verify it was stored
+          const storedInfo = localStorage.getItem('userInfo');
+          if (!storedInfo) {
+            throw new Error('Failed to store token in localStorage');
+          }
+          
+          // Update UI for success
+          statusElement.textContent = 'Login Successful!';
+          statusElement.className = 'success';
+          messageElement.innerHTML = '<p>You have been successfully logged in. Redirecting to homepage...</p>';
+          spinnerElement.style.display = 'none';
+          continueBtn.style.display = 'inline-block';
+          showDebugBtn.style.display = 'inline-block';
+          
+          // Redirect after delay
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 3000);
+          
+        } catch (error) {
+          // Handle errors
+          console.error('Error during login:', error);
+          statusElement.textContent = 'Login Failed';
+          statusElement.className = 'error';
+          messageElement.innerHTML = `<p>Error: ${error.message}</p><p>Please try again.</p>`;
+          spinnerElement.style.display = 'none';
+          retryBtn.style.display = 'inline-block';
+          showDebugBtn.style.display = 'inline-block';
+        }
+      } else if (params.error) {
+        // Handle error parameter
+        statusElement.textContent = 'Authentication Error';
+        statusElement.className = 'error';
+        messageElement.innerHTML = `<p>Error: ${params.error}</p><p>Please try again.</p>`;
+        spinnerElement.style.display = 'none';
+        retryBtn.style.display = 'inline-block';
+        showDebugBtn.style.display = 'inline-block';
+      } else {
+        // No token or error parameter
+        statusElement.textContent = 'Invalid Request';
+        statusElement.className = 'error';
+        messageElement.innerHTML = '<p>No authentication token found. Please try again.</p>';
+        spinnerElement.style.display = 'none';
+        retryBtn.style.display = 'inline-block';
+        showDebugBtn.style.display = 'inline-block';
+      }
+    }
+
+    // Set up event listeners
+    document.getElementById('continue-btn').addEventListener('click', () => {
+      window.location.href = '/';
+    });
+    
+    document.getElementById('retry-btn').addEventListener('click', () => {
+      window.location.href = '/api/auth/google';
+    });
+    
+    document.getElementById('show-debug-btn').addEventListener('click', () => {
+      const debugElement = document.getElementById('debug');
+      if (debugElement.style.display === 'none') {
+        debugElement.style.display = 'block';
+        document.getElementById('show-debug-btn').textContent = 'Hide Debug Info';
+      } else {
+        debugElement.style.display = 'none';
+        document.getElementById('show-debug-btn').textContent = 'Show Debug Info';
+      }
+    });
+
+    // Run the login handler when the page loads
+    window.onload = handleLogin;
+  </script>
+</body>
+</html>
